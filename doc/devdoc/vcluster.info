@@ -1,0 +1,18 @@
+# vcluster files
+
+## hosts file:(raw)
+IP-0  host-0  host-0.clustername
+IP-1  host-1  host-1.clustername
+...
+
+## info file:(json)
+{
+	clusterid: ID ,
+	status: stopped/running ,
+	size: size ,
+	containers: [
+		{ containername: lxc_name, hostname: hostname, ip: lxc_ip, host: host_ip }, 
+		{ containername: lxc_name, hostname: hostname, ip: lxc_ip, host: host_ip },
+		...
+							]
+}

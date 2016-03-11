@@ -1,0 +1,78 @@
+{% extends "base.html"%}
+{% block title %}Docklet | GroupList{% endblock %}
+
+{% block panel_title %}GroupList{% endblock %}
+
+{% block css_src %}
+<link href="/static/ionrange/css/ion.rangeSlider.css" rel="stylesheet">
+<link href="/static/ionrange/css/ion.rangeSlider.skinFlat.css" rel="stylesheet">
+{% endblock %}
+
+{% block panel_list %}
+<ol class="breadcrumb">
+  <li>
+      <a href="/dashboard/">Home</a>
+  </li>
+  <li class="active">
+      <a href='/group/list/'>GroupList</a>
+  </li>
+</ol>
+{% endblock %}
+{% block content %}
+<div class="row">
+  <div class="col-lg-4">
+      <div class="ibox">
+        <form action="" method="GET">
+          <div class="ibox-title">
+              <button type="button submit" class="btn btn-primary btn-xs pull-right" onClick="">Submit</button>
+              <h5>root</h5>
+          </div>
+          <div class="ibox-content">
+          <div class="text-center">
+              <div class="m-r-md inline">
+                <input type="text" value="7000" class="dial m-r" data-fgColor="#1AB394" data-width="105" data-height="105"  data-step="100" data-min="0" data-max="10000" data-displayPrevious=true/>
+              </div>
+              <div class="m-r-md inline">
+                <input type="text" value="5000" class="dial m-r" data-fgColor="#ED5565" data-width="105" data-height="105"  data-step="100" data-min="0" data-max="10000" data-displayPrevious=true/>
+              </div>
+              <br/>
+              <p>CPU & Memory</p>
+          </div>
+          <div class="text-center">
+            <div id="range_root_images" ></div>
+            <p>Image Quantity</p>
+            <div id="range_root_lifecycle" ></div>
+            <p>Life Cycle</p>
+          </div>
+          </div>
+        </form>
+      </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block script_src %}
+<script src="/static/js/plugins/jsKnob/jquery.knob.js"></script>
+<script src="/static/ionrange/js/ion.rangeSlider.min.js"></script>
+<script>
+  $(document).ready(function(){
+      $(".dial").knob();
+      $("#range_root_images").ionRangeSlider({
+        type: "single",
+        grid: true,
+        min: 0,
+        max: 48,
+        from: 20,
+      });
+      $("#range_root_lifecycle").ionRangeSlider({
+        type: "single",
+        grid: true,
+        min: 0,
+        max: 48,
+        from: 10,
+        postfix: "h",
+      });
+    }
+  )
+</script>
+{% endblock %}

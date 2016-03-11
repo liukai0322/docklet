@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Docklet | MonitorUser{% endblock %}
+
+{% block panel_title %}Users Info{% endblock %}
+
+{% block panel_list %}
+<ol class="breadcrumb">
+  <li>
+      <a href="/index/">Home</a>
+  </li>
+      <li class="active">
+      <strong>UsersInfo</strong>
+  </li>
+</ol>
+{% endblock %}
+
+{% block content %}
+	  <div class="row">
+	     <div class="col-md-12">
+                 <div class="ibox float-e-margins">
+                     <div class="ibox-title">
+                         <h5>All Users Info</h5>
+                         <div class="ibox-tools">
+                             <a class="collapse-link">
+                                 <i class="fa fa-chevron-up"></i>
+                             </a>
+                             <a class="close-link">
+                                 <i class="fa fa-times"></i>
+                             </a>
+                         </div>
+                     </div>
+                     <div class="ibox-content">
+                         <table class="table table-bordered">
+                             <thead>
+                             <tr>
+				 <th>NO</th>
+                                 <th>Name</th>
+				 <th>Running/Total Clusters</th>
+				 <th>Running/Total Containers</th>
+				 <th>Register Time</th>
+				 <th>Last Login</th>
+				 <th>Frequency</th>
+				 <th>Detail</th>
+                             </tr>
+                             </thead>
+                             <tbody>
+                             {% for user in userslist %}
+                             <tr>
+                                 <td>{{ loop.index }}</td>
+                                 <td>{{ user['name'] }}</td>
+				 <td>{{ user['clustercnt']['clurun'] }}/{{ user['clustercnt']['clutotal'] }}</td>
+				 <td>{{ user['clustercnt']['conrun'] }}/{{ user['clustercnt']['contotal'] }}</td>
+				 <td>--</td>
+				 <td>--</td>
+				 <td>--</td>
+                                 <td><a class="btn btn-info" href='/monitor/User/{{ user['name'] }}/clusters/'>Clusters</a></td>
+			     </tr>
+                             {% endfor %}
+                             </tbody>
+                         </table>
+
+                     </div>
+                 </div>
+             </div>
+	   </div>
+{% endblock %}
+

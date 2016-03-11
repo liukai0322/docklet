@@ -1,0 +1,18 @@
+# filesystem
+
+here is the path and content description of docklet filesystem 
+
+FS_PREFIX
+  |__ global/users/{username}
+  |                  |__ clusters/clustername : clusterid, cluster size, status, containers, ...  in json format
+  |                  |__ hosts/id.hosts : ip  host-nodeid  host-nodeid.clustername 
+  |                  |__ data : direcroty in distributed filesystem for user to put his data
+  |                  |__ ssh  : ssh keys 
+  |
+  |__ local 
+       |__ docklet-storage : loop file for lvm
+	   |__ basefs : base image
+	   |__ volume / { username-clusterid-nodeid } : upper layer of container
+	 
+
+ 

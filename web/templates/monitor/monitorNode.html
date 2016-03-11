@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block title %}Docklet | Node Summary{% endblock %}
+
+{% block panel_title %}Summary for <div id='node_name'>{{ node_name }}</div>{% endblock %}
+
+{% block panel_list %}
+<ol class="breadcrumb">
+  <li>
+      <a href="/dashboard/">Home</a>
+  </li>
+  <li>
+      <a href='/vclusters/'>VClusterStatus</a>
+  </li>
+      <li class="active">
+      <strong>Summary</strong>
+  </li>
+</ol>
+{% endblock %}
+
+{% block content %}
+         <div class="row">
+	     <div class="col-md-12">
+                 <div class="ibox float-e-margins">
+                     <div class="ibox-title">
+                         <h5>Current Status</h5>
+                         <div class="ibox-tools">
+                             <a class="collapse-link">
+                                 <i class="fa fa-chevron-up"></i>
+                             </a>
+                             <a class="close-link">
+                                 <i class="fa fa-times"></i>
+                             </a>
+                         </div>
+                     </div>
+                     <div class="ibox-content table-responsive">
+                         <table class="table table-bordered">
+                             <thead>
+                             <tr>
+                                 <th>Name</th>
+                                 <th>State</th>
+                                 <th>IP Address</th>
+                                 <th>Running Time</th>
+                                 <th>Mem Used</th>
+                             </tr>
+                             </thead>
+                             <tbody>
+                             <tr>
+                                 <td>{{ container['Name'] }}</td>
+                                 {% if container['State'] == 'STOPPED' %}
+                                 <td><div id='con_state' class="label label-danger">Stopped</div></td>
+                                 <td id='con_ip'>--</td>
+                                 {% else %}
+                                 <td><div id='con_state' class="label label-primary">Running</div></td>
+                                 <td id='con_ip'>{{ container['IP'] }}</td>
+                                 {% endif %}
+                                 <td id='con_cpu'>--</td>
+                                 <td id='con_mem'>--</td>
+                                 </tr>
+                             </tbody>
+                         </table>
+
+                     </div>
+                 </div>
+             </div>
+	   </div>
+	   <div class="row">
+                <div class="col-lg-6">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>Memory Used(%):</h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                    <i class="fa fa-wrench"></i>
+                                </a>
+                                <ul class="dropdown-menu dropdown-user">
+                                    <li><a href="#">Config option 1</a>
+                                    </li>
+                                    <li><a href="#">Config option 2</a>
+                                    </li>
+                                </ul>
+                                <a class="close-link">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+
+                            <div class="flot-chart">
+                                <div class="flot-chart-content" id="mem-chart"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+		<div class="col-lg-6">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>CPU Used(%):</h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                    <i class="fa fa-wrench"></i>
+                                </a>
+                                <ul class="dropdown-menu dropdown-user">
+                                    <li><a href="#">Config option 1</a>
+                                    </li>
+                                    <li><a href="#">Config option 2</a>
+                                    </li>
+                                </ul>
+                                <a class="close-link">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+
+                            <div class="flot-chart">
+                                <div class="flot-chart-content" id="cpu-chart"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+{% endblock %}
+
+{% block script_src %}
+<!-- Flot -->
+<script src="/static/js/plugins/flot/jquery.flot.js"></script>
+<script src="/static/js/plugins/flot/jquery.flot.tooltip.min.js"></script>
+<script src="/static/js/plugins/flot/jquery.flot.resize.js"></script>
+<script src="/static/js/plugins/flot/jquery.flot.pie.js"></script>
+<script src="/static/js/plugins/flot/jquery.flot.time.js"></script>
+    
+<!-- Flot demo data -->
+<script src="/static/js/demo/plot_monitor.js"></script>
+{% endblock %}

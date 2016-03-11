@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+	<div align="center" style="color:#BB0000;font-family:Microsoft Yahei;font-size: 24px; font-weight: bold; margin: 20px 20px 20px 20px;">
+		<p>正在转向北京大学身份认证系统......</p>
+	</div>
+	<script language=javascript>
+		document.write("<form action='https://iaaa.pku.edu.cn/iaaa/oauth.jsp' method=post name='formx1' style='display:none'>");
+		document.write("<input type=hidden name='appID' value='iwork'>");
+		document.write("<input type=hidden name='appName' value='混合云'>");
+		document.write("<input type=hidden name='redirectUrl' value='http://iwork.internetware.org/pkulogin'>");
+		document.write("</form>");
+		setTimeout("document.formx1.submit();",1000);
+	</script>
+</body>
+</html>

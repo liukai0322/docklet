@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Docklet | Register</title>
+    
+    <!--  <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/font-awesome/css/font-awesome.css" rel="stylesheet"> -->
+    <link href="http://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+    <link href="http://cdn.bootcss.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="/static/css/animate.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
+
+</head>
+
+<body class="gray-bg">
+
+    <div class="middle-box text-center loginscreen animated fadeInDown">
+        <div>
+            <div>
+
+                <img src="/static/img/logo.png" class="logo-name" height="85%" width="85%">
+
+            </div>
+            <h3>Register a Docklet account</h3>
+            <p>An easy and quick way to launch your DISTRIBUTED applications!</p>
+            <form class="m-t" role="form" action="" id="registerForm" method="POST">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="用户名" required="" name="username">
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control" placeholder="密码" required="" name="password">
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control" placeholder="重复密码" required="" name="password2">
+                </div>
+                <div class="form-group">
+                    <input type="email" class="form-control" placeholder="E-mail" required="" name="email">
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="学号" required="" name="studentnumber">
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="院系" required="" name="department">
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="真实姓名" required="" name="truename">
+                </div>
+                <div class="form-group">
+                    <textarea  class="form-control"  name="description" form="registerForm">
+请描述为何要使用Docklet
+                    </textarea>
+                </div>
+                <button type="submit"  class="btn btn-primary block full-width m-b">Register</button>
+
+                <!--p class="text-muted text-center"><small>Do not have an account?</small></p-->
+                <!--a class="btn btn-sm btn-white btn-block" href="register.html">Create an account</a-->
+            </form>
+            <p class="m-t"> <small>Copyright&copy;&nbsp;2015<a href="http://www.sei.pku.edu.cn"> SEI, Peking University</a>.All rigths reserved</small> </p>
+        </div>
+    </div>
+
+    <!-- Mainly scripts -->
+    <script src="/static/js/jquery-2.1.1.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+
+</body>
+
+</html>

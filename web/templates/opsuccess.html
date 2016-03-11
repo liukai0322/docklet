@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Docklet | Success{% endblock %}
+
+{% block panel_title %}Success{% endblock %}
+
+{% block panel_list %}
+<ol class="breadcrumb">
+  <li>
+      <strong>Home</strong>
+  </li>
+      <li class="active">
+      <strong>Success</strong>
+  </li>
+</ol>
+{% endblock %}
+{% block content %}
+<div class="ibox-content text-center p-md">
+	<h1>SUCCESS</h1>
+	<br/>
+	<br/>
+	<a href="/dashboard/"><span class="btn btn-w-m btn-success">Click Here Back To The Dashboard</span></a>
+</div>
+{% endblock %}
+
+{% block script_src %}
+<!-- Mainly scripts -->
+    <script src="/static/js/jquery-2.1.1.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+    <script src="/static/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+
+    <!-- Custom and plugin javascript -->
+    <script src="/static/js/inspinia.js"></script>
+    <script src="/static/js/plugins/pace/pace.min.js"></script>
+
+    <!-- Steps -->
+    <script src="/static/js/plugins/staps/jquery.steps.min.js"></script>
+
+    <!-- Jquery Validate -->
+    <script src="/static/js/plugins/validate/jquery.validate.min.js"></script>
+
+{% endblock %}

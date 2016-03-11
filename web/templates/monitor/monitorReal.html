@@ -1,0 +1,315 @@
+{% extends 'base.html' %}
+
+{% block title %}Docklet | Hosts{% endblock %}
+
+{% block panel_title %}Summary for <div id='com_ip'>{{ com_ip }}</div>{% endblock %}
+
+{% block panel_list %}
+<ol class="breadcrumb">
+  <li>
+      <a href="/dashboard/">Home</a>
+  </li>
+  <li>
+      <a href='/hosts/'>Hosts</a>
+  </li>
+  <li class='active'>
+      <strong>Summary</strong>
+  </li>
+</ol>
+{% endblock %}
+
+{% block content %}
+       <div class="row">
+	     <div class="col-md-12">
+                 <div class="ibox float-e-margins">
+                     <div class="ibox-title">
+                         <h5>CPU info</h5>
+                         <div class="ibox-tools">
+                             <a class="collapse-link">
+                                 <i class="fa fa-chevron-up"></i>
+                             </a>
+                             <a class="close-link">
+                                 <i class="fa fa-times"></i>
+                             </a>
+                         </div>
+                     </div>
+                     <div class="ibox-content table-responsive">
+                         <table class="table table-bordered">
+                             <thead>
+                             <tr>
+				 <th>Processor ID</th>
+				 <th>Model name</th>
+				 <th>physical id</th>
+				 <th>core id</th>
+				 <th>cpu MHz</th>
+				 <th>cache size</th>
+                             </tr>
+                             </thead>
+                             <tbody>
+			     {% for processor in processors %}
+                             <tr>
+				 <th>{{ processor['processor'] }}</th>
+                                 <td>{{ processor['model name']}}</td>
+                                 <td>{{ processor['physical id']}}</td>
+                                 <td>{{ processor['core id']}}</td>
+                                 <td>{{ processor['cpu MHz']}}</td>
+                                 <td>{{ processor['cache size']}}</td>
+			     </tr>
+			     {% endfor %}
+                             </tbody>
+                         </table>
+
+                     </div>
+                 </div>
+             </div>
+	   </div>
+
+	   <div class="row">
+	     <div class="col-md-12">
+                 <div class="ibox float-e-margins">
+                     <div class="ibox-title">
+                         <h5>OS info</h5>
+                         <div class="ibox-tools">
+                             <a class="collapse-link">
+                                 <i class="fa fa-chevron-up"></i>
+                             </a>
+                             <a class="close-link">
+                                 <i class="fa fa-times"></i>
+                             </a>
+                         </div>
+                     </div>
+                     <div class="ibox-content table-responsive">
+                         <table class="table table-bordered">
+                             <tbody>
+                             <tr>
+				 <th>OS Issue</th>
+                                 <td>{{ OSinfo['OSIssue']}}</td>
+			     </tr>
+			     <tr>
+				 <th>OS Kernel name</th>
+                                 <td>{{ OSinfo['OSKname']}}</td>
+			     </tr>
+			     <tr>
+				 <th>OS Kernel release</th>
+                                 <td>{{ OSinfo['OSKrelease']}}</td>
+			     </tr>
+			     <tr>
+				 <th>OS Kernel version</th>
+                                 <td>{{ OSinfo['OSKversion']}}</td>
+			     </tr>
+			     <tr>
+				 <th>OS Kernel machine</th>
+                                 <td>{{ OSinfo['OSKmachine']}}</td>
+			     </tr>
+                             </tbody>
+                         </table>
+
+                     </div>
+                 </div>
+             </div>
+	   </div>
+
+          <div class="row">
+	     <div class="col-md-12">
+                 <div class="ibox float-e-margins">
+                     <div class="ibox-title">
+                         <h5>Cpu and Memory Status</h5>
+                         <div class="ibox-tools">
+                             <a class="collapse-link">
+                                 <i class="fa fa-chevron-up"></i>
+                             </a>
+                             <a class="close-link">
+                                 <i class="fa fa-times"></i>
+                             </a>
+                         </div>
+                     </div>
+                     <div class="ibox-content table-responsive">
+                         <table class="table table-bordered">
+                             <thead>
+                             <tr>
+				  <th colspan='4'>Cpu(%)</th>
+				  <th colspan='3'>Memory(MB)</th>
+                             </tr>
+                             <tr>
+				 <th>us</th>
+				 <th>sy</th>
+				 <th>wa</th>
+				 <th>idle</th>
+				 <th>used</th>
+				 <th>free</th>
+				 <th>total</th>
+                             </tr>
+                             </thead>
+                             <tbody>
+                             <tr>
+                                 <td id='cpu_us'>--</td>
+                                 <td id='cpu_sy'>--</td>
+                                 <td id='cpu_wa'>--</td>
+                                 <td id='cpu_idle'>--</td>
+                                 <td id='mem_used'>--</td>
+                                 <td id='mem_free'>--</td>
+                                 <td id='mem_total'>--</td>
+			     </tr>
+                             </tbody>
+                         </table>
+                     </div>
+                 </div>
+             </div>
+	   </div>
+
+           <div class="row">
+	     <div class="col-md-12">
+                 <div class="ibox float-e-margins">
+                     <div class="ibox-title">
+                         <h5>Disk Status</h5>
+                         <div class="ibox-tools">
+                             <a class="collapse-link">
+                                 <i class="fa fa-chevron-up"></i>
+                             </a>
+                             <a class="close-link">
+                                 <i class="fa fa-times"></i>
+                             </a>
+                         </div>
+                     </div>
+                     <div class="ibox-content table-responsive">
+                         <table class="table table-bordered">
+                             <thead>
+                             <tr>
+                                  <th colspan='5'>Disk info</th>
+                             </tr>
+                             <tr>
+                                  <th>filesystem</th>
+                                  <th>used(MB)</th> 
+                                  <th>free(MB)</th>
+                                  <th>total(MB)</th>
+                                  <th>usedp(%)</th>
+                             </tr>
+                             </thead>
+                             <tbody>
+                             {% for diskinfo in diskinfos %}
+                             <tr>
+                                 <td id='disk_{{ loop.index }}_filesystem'>--</td>
+                                 <td id='disk_{{ loop.index }}_used'>--</td>
+                                 <td id='disk_{{ loop.index }}_free'>--</td>
+                                 <td id='disk_{{ loop.index }}_total'>--</td>
+                                 <td id='disk_{{ loop.index }}_usedp'>--</td>
+                             </tr>
+                             {% endfor %}
+                             </tbody>
+                         </table>
+
+                     </div>
+                 </div>
+             </div>
+	   </div>
+
+	   <div class="row">
+                <div class="col-lg-6">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>Memory Used(%):</h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                    <i class="fa fa-wrench"></i>
+                                </a>
+                                <ul class="dropdown-menu dropdown-user">
+                                    <li><a href="#">Config option 1</a>
+                                    </li>
+                                    <li><a href="#">Config option 2</a>
+                                    </li>
+                                </ul>
+                                <a class="close-link">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+
+                            <div class="flot-chart">
+                                <div class="flot-chart-content" id="mem-chart"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+		<div class="col-lg-6">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>CPU Used(%):</h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                    <i class="fa fa-wrench"></i>
+                                </a>
+                                <ul class="dropdown-menu dropdown-user">
+                                    <li><a href="#">Config option 1</a>
+                                    </li>
+                                    <li><a href="#">Config option 2</a>
+                                    </li>
+                                </ul>
+                                <a class="close-link">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+
+                            <div class="flot-chart">
+                                <div class="flot-chart-content" id="cpu-chart"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+	    <!--<div class="row">
+		<div class="col-lg-6">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>Disk Used(%):</h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                    <i class="fa fa-wrench"></i>
+                                </a>
+                                <ul class="dropdown-menu dropdown-user">
+                                    <li><a href="#">Config option 1</a>
+                                    </li>
+                                    <li><a href="#">Config option 2</a>
+                                    </li>
+                                </ul>
+                                <a class="close-link">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+
+                            <div class="flot-chart">
+                                <div class="flot-chart-content" id="disk-chart"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+	    </div>-->
+
+	    
+
+{% endblock %}
+
+{% block script_src %}
+<!-- Flot -->
+<script src="/static/js/plugins/flot/jquery.flot.js"></script>
+<script src="/static/js/plugins/flot/jquery.flot.tooltip.min.js"></script>
+<script src="/static/js/plugins/flot/jquery.flot.resize.js"></script>
+<script src="/static/js/plugins/flot/jquery.flot.pie.js"></script>
+<script src="/static/js/plugins/flot/jquery.flot.time.js"></script>
+    
+<!-- Flot demo data -->
+<script src="/static/js/demo/plot_monitorReal.js"></script>
+{% endblock %}

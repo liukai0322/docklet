@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}Docklet | Monitor{% endblock %}
+
+{% block panel_title %}NodeInfo for {{ muser }}{% endblock %}
+
+{% block panel_list %}
+<ol class="breadcrumb">
+  <li>
+      <a href="/dashboard/">Home</a>
+  </li>
+  <li>
+      <a href='/monitor/User/'>UsersInfo</a>
+  </li>
+  <li class='active'>
+      <strong>Clusters</strong>
+  </li>
+</ol>
+{% endblock %}
+
+{% block content %}
+{% for cluster in clusters %}
+	  <div class="row">
+	     <div class="col-md-12">
+                 <div class="ibox float-e-margins">
+                     <div class="ibox-title">
+                         <h5>Cluster Name: {{ cluster }}</h5>
+                         <div class="ibox-tools">
+                             <a class="collapse-link">
+                                 <i class="fa fa-chevron-up"></i>
+                             </a>
+                             <a class="close-link">
+                                 <i class="fa fa-times"></i>
+                             </a>
+                         </div>
+                     </div>
+                     <div class="ibox-content">
+
+                         <table class="table table-bordered">
+                             <thead>
+                             <tr>
+				 <th>Node ID</th>
+				 <th>Node Name</th>
+                                 <th>IP Address</th>
+                                 <th>Status</th>
+				 <th>Create Time</th>
+				 <th>detail</th>
+                             </tr>
+                             </thead>
+                             <tbody>
+                             {% for container in containers[cluster]['containers'] %}
+                             <tr>
+                                 <td>{{ loop.index }}</td>
+                                 <td>{{ container['containername'] }}</td>
+                                 <td>{{ container['ip'] }}</td>
+                               
+                                 {% if containers[cluster]['status'] == 'stopped' %}
+                                 <td><div class="label label-danger">Stopped</div></td>
+                                 {% else %}
+                                 <td><div class="label label-primary">Running</div></td>
+                                 {% endif %}
+                                 
+                                 <td>xxxxx</td>
+                                 <td><a class="btn btn-info" href='/monitor/Node/{{ container['containername'] }}/detail/'>Detail</a></td>
+			     </tr>
+                             {% endfor %}
+                             </tbody>
+                         </table>
+
+                     </div>
+                 </div>
+             </div>
+	   </div>
+
+{% endfor %}
+{% endblock %}

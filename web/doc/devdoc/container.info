@@ -1,0 +1,18 @@
+# container
+
+container name : username-clusterid-nodeid
+hostname : host-nodeid
+lxc config : /var/lib/lxc/username-clusterid-nodeid/config
+lxc rootfs : /var/lib/lxc/username-clusterid-nodeid/rootfs
+lxc rootfs
+      |__ / : overlay : basefs + volume/username-clusterid-nodeid/{upper,work}
+	  |__ /nfs : global/users/username/data
+	  |__ /etc/hosts : global/users/username/clusters/clusterid/hosts
+	  |__ /root/.ssh : global/users/username/ssh
+container.sh :
+	1. container.sh start lxc_name username clusterid hostname ip
+	2. container.sh stop lxc_name 
+	lxc-name : username-clusterid-nodeid
+	hostname : host-nodeid
+
+

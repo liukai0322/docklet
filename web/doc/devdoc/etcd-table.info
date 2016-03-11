@@ -1,0 +1,31 @@
+# ETCD Table
+
+we use etcd for some configuration information of our clusters, here is some details.
+
+every cluster has a CLUSTER_NAME and all data of this cluster is put in a directory called CLUSTER_NAME in etcd just like a table.
+
+so, different cluster should has different CLUSTER_NAME.
+
+below is content of cluster info in CLUSTER_NAME 'table' in etcd:
+<type>		<name>		<content>		<description>   
+key    token             random code  token for checking whether master and workers has the same global filesystem
+
+dir    machines            ...        info of physical clusters
+dir    machines/allnodes  ip:ok       record all nodes, for recovery and checks  
+dir    machines/runnodes  ip: ?       record running node for this start up.
+                                      when startup:          ETCD
+									                   |   IP:waiting    |   1. worker write worker-ip:waiting
+                   2. master update IP:init-mode       |   IP:init-mode  |   3. worker init itself by init-mode
+									                   |   IP:work       |   4. worker finish init and update IP:work
+               5. master add workerip and update IP:ok |   IP:ok         |
+
+key    service/master   master-ip
+key    service/mode     new,recovery  start mode of cluster
+
+lock   nextip           NULL          lock for get nextip
+key    network/nextip   IP            next available ip address
+
+key    vcluster/nextid  ID            next available ID
+
+
+

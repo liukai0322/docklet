@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Docklet | Dashboard</title>
+	  <link rel="shortcut icon" href="/static/img/favicon.ico">
+
+      <!--  <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+      <link href="/static/font-awesome/css/font-awesome.css" rel="stylesheet"> -->
+    <link href="http://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+    <link href="http://cdn.bootcss.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="/static/css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="/static/css/plugins/steps/jquery.steps.css" rel="stylesheet">
+
+    <link href="/static/css/animate.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
+    <link href="/static/css/docklet.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div id="wrapper">
+
+    <nav class="navbar-default navbar-static-side" role="navigation" >
+        <div class="sidebar-collapse">
+            <ul class="nav metismenu" id="side-menu">
+                <li class="nav-header">
+                    <div class="dropdown profile-element">
+                            <img alt="image" class="img-circle"  height="80px" src="guest" />
+                            <a data-toggle="dropdown" class="dropdown-toggle">
+				    <span class="clear"> <span class="block m-t-xs"> <strong class="font-bold">guest</strong>
+                </span> <span class="text-muted text-xs block">guest<b class="caret"></b></span> </span> </a>
+                            <ul class="dropdown-menu animated fadeInRight m-t-xs">
+                                <li><a>Profile</a></li>
+                                <li class="divider"></li>
+                                <li><a>Logout</a></li>
+                            </ul>
+                    </div>
+                    <div class="logo-element">
+					guest
+                    </div>
+                </li>
+                <li class="active" id="nav_Dashboard">
+                    <a><i class="fa fa-th-large"></i> <span class="nav-label">Dashboard</span></a>
+                </li>
+		<li id="nav_Config">
+                    <a><i class="fa fa-gears"></i> <span class="nav-label">Config</span></a>
+                </li>
+
+		<li id="nav_Status">
+		    <a><i class="fa fa-bar-chart"></i> <span class="nav-label">Status</span></a>
+		</li>
+            </ul>
+
+        </div>
+    </nav>
+
+    <div id="page-wrapper" class="gray-bg">
+        <div class="row border-bottom" >
+            <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
+                <div class="navbar-header">
+                    <a class="navbar-minimalize minimalize-styl-2 btn btn-primary "><i class="fa fa-bars"></i> </a>
+                </div>
+                <ul class="nav navbar-top-links navbar-right">
+                    <li>
+                     <span class="m-r-sm text-muted welcome-message">Welcome to Docklet Project.</span>
+                    </li>
+
+                    <li class="dropdown">
+                      <a class="dropdown-toggle count-info" data-toggle="dropdown">
+                          <i class="fa fa-envelope"></i>  <span class="label label-primary">0</span>
+                      </a>
+                    </li>
+                    <li>
+                        <a href="/document/" target="_blank"><strong>Help</strong></a>
+                    </li>
+                    <li>
+                        <a>
+                            <i class="fa fa-sign-out"></i> Log out
+                        </a>
+                    </li>
+                </ul>
+
+            </nav>
+        </div>
+        <div class="row wrapper border-bottom white-bg page-heading">
+            <div class="col-lg-10">
+                <h2>{% block panel_title %}Dashboard{% endblock %}</h2>
+		{% block panel_list %}
+                <ol class="breadcrumb">
+                    <li>
+                        <a>Home</a>
+                    </li>
+                    <li class="active">
+                        <strong>Dashboard</strong>
+                    </li>
+                </ol>
+		{% endblock %}
+            </div>
+            <div class="col-lg-2">
+
+            </div>
+        </div>
+        <div class="wrapper wrapper-content animated fadeInRight">
+<div class="row">
+         <div class="col-lg-12">
+             <div class="ibox float-e-margins">
+                 <div class="ibox-title">
+                     <h5>Workspaces </h5>
+                     <div class="ibox-tools">
+                         <a class="collapse-link">
+                             <i class="fa fa-chevron-up"></i>
+                         </a>
+                         <a class="close-link">
+                             <i class="fa fa-times"></i>
+                         </a>
+                     </div>
+                 </div>
+                 <div class="ibox-content">
+                     <table class="table table-bordered">
+                         <thead>
+                         <tr>
+                             <th>ID</th>
+                             <th>Name</th>
+			     <th>Status</th>
+			     <th>Operation</th>
+			     <th>WorkSpace</th>
+                         </tr>
+                         </thead>
+                         <tbody>
+                         <tr>
+			     <td>1</td>
+                             <td>guestspace</td>
+			     <td><div class="text-success"><i class="fa fa-play"></i> Running</div></td>
+			     <td>
+				     <button type="button"  class="btn btn-xs btn-warning"> &nbsp;Stop&nbsp;&nbsp; </button>
+				     <button type="button" class="btn btn-xs btn-default"> Delete </button>
+			     </td>
+				 <td>
+					 <a href="/go/guest/guestspace" target="_blank"><button type="button" class="btn btn-xs btn-success">&nbsp;&nbsp;&nbsp;Go&nbsp;&nbsp;&nbsp;</button></a>
+				</td>
+                         </tr>
+                         </tbody>
+                     </table>
+
+                 </div>
+             </div>
+         </div>
+	</div>
+        </div>
+			<div class="footer">
+            	<div class="pull-right">
+                	<i>Docklet</i> Project
+            	</div>
+            	<div>
+                	<strong>Copyright</strong>&copy;&nbsp;2015<a href="http://www.sei.pku.edu.cn"> SEI, Peking University</a>.All rights reserved
+            	</div>
+      </div>
+
+    </div>
+</div>
+
+<!-- Mainly scripts -->
+<script src="/static/js/jquery-2.1.1.js"></script>
+<script src="/static/js/bootstrap.min.js"></script>
+<script src="/static/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="/static/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+
+<!-- Custom and plugin javascript -->
+<script src="/static/js/inspinia.js"></script>
+<script src="/static/js/plugins/pace/pace.min.js"></script>
+
+<script type="text/javascript">
+    var pathname = window.location.pathname;
+    pathname = pathname.split(/\//);
+    if(pathname[1] != 'dashboard')
+        $("#nav_Dashboard").removeClass("active");
+    if(pathname[1] == 'monitor')
+    {
+        if(pathname.length < 4 || pathname[2] == 'Node')
+        	$("#nav_Status").addClass("active");
+    	  else if(pathname[2] == 'Real')
+        	     $("#nav_Hosts").addClass("active");
+	           else if(pathname[2] == 'User')
+		                $("#nav_MonitorUser").addClass("active");
+    }
+	  else if(pathname[1] == 'factory')
+		        $("#nav_Factory").addClass("active");
+    else if(pathname[1] == 'user')
+    {
+  		  if (pathname[2] == 'list')
+          $("#user_List").addClass("active");
+    }
+</script>
