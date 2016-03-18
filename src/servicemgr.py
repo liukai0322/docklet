@@ -14,7 +14,7 @@ class ServiceMgr():
         return_value = subprocess.call(command,shell=True)
         return return_value
 
-    def loadfile(self, fileurl):
+    def load_file(self, fileurl):
         if not os.path.isfile(fileurl):
             return None
         f = open(fileurl, 'r')
@@ -23,22 +23,43 @@ class ServiceMgr():
             return None
         return json.loads(f.read())
 
-    def get_serviceconf(self, service, publicpath, privatepath):
+    def do_getconf(self, services, service, filepath, multinode):
+        servicelist = None
         serviceconf = None
-        serviceconf = self.loadfile(privatepath+service+'/'+service+'.config')
-        if serviceconf is None:
-            serviceconf = self.loadfile(publicpath+service+'/'+service+'.config')
+        #load servicelist
+        servicelist = self.load_file(filepath+'/service.list')
+        if servicelist is None:
+            return serviceconf
+        #get service config path
+        serviceconfpath = ''
+        if multinode is True :
+            if services in servicelist['multi-node'].keys() and service in servicelist['multi-node'][services].keys():
+                serviceconfpath = servicelist['multi-node'][services][service]
+        else :
+            if service in servicelist['one-node'].keys() :
+                serviceconfpath = servicelist['one-node'][service]
+        if serviceconfpath is '':
+            return serviceconf
+
+        serviceconf = self.load_file(filepath+serviceconfpath)
+        return serviceconf
+
+    def get_serviceconf(self, services, service, publicpath, privatepath, multinode):
+        serviceconf = None
+        serviceconf = self.do_getconf(services, service, privatepath, multinode)
+        if serviceconf is None :
+            serviceconf = self.do_getconf(services, service, publicpath, multinode)
         return serviceconf
 
     def parse_multinodes(self, multinodes, publicpath, imagename, imageowner, imagetype):
-        privatepath = self.FS_PREFIX+'/global/images/'+imagetype+'/'+imageowner+'/'+imagename+'/home/init.c/'
+        privatepath = self.FS_PREFIX+'/global/images/'+imagetype+'/'+imageowner+'/'+imagename+'/home/init.c'
         if imagename is 'base':
             privatepath = publicpath
         servicelist = multinodes.split('+')
         mservice = []
         oservice = []
         for service in servicelist:
-            serviceconf = self.get_serviceconf(service, publicpath, privatepath)
+            serviceconf = self.get_serviceconf(multinodes, service, publicpath, privatepath, True)
             if serviceconf is None:
                 continue
             else :
@@ -62,17 +83,17 @@ class ServiceMgr():
 
         #get system service
         servicelistpath = self.FS_PREFIX + '/local/basefs/home/init.s/service.list'
-        allservice = self.loadfile(servicelistpath)
-        onenode_service.extend(allservice['one-node'])
-        multinode_service.extend(allservice['multi-node'])
+        allservice = self.load_file(servicelistpath)
+        onenode_service.extend(allservice['one-node'].keys())
+        multinode_service.extend(allservice['multi-node'].keys())
 
         #get image service
         if not imagename is 'base' :
             servicelistpath = self.FS_PREFIX + '/global/images/' + isshared + '/' + username + '/' + imagename + '/home/init.c/service.list'
-            imageservice = self.loadfile(servicelistpath)
+            imageservice = self.load_file(servicelistpath)
             if not imageservice is None:
-                onenode_service.extend(imageservice['one-node'])
-                multinode_service.extend(imageservice['multi-node'])
+                onenode_service.extend(imageservice['one-node'].keys())
+                multinode_service.extend(imageservice['multi-node'].keys())
 
         onenode_service.sort()
         multinode_service.sort()
@@ -88,36 +109,38 @@ class ServiceMgr():
         imageowner = image['owner']
         imagetype = image['type']
         #servicepath = self.FS_PREFIX+'/global/users/'+username+'/clusters/'+clustername+'.service'
-        publicpath = self.FS_PREFIX+'/local/basefs/home/init.s/'
+        publicpath = self.FS_PREFIX+'/local/basefs/home/init.s'
+        #services initialization
         clustersize = 1
         services = {}
-        services['host-0'] = []
+        services['host-0'] = {}
+        services['clusterservices'] = []
         services['master'] = 'host-0'
         #one node cluster or multinode cluster
         if onenode is None and multinodes is None:
             return [clustersize, services]
         elif multinodes is None:
             if isinstance(onenode, str):
-                services['host-0'].append(onenode)
+                services['host-0'][onenode] = "one-node"
+                services['clusterservices'].append(onenode)
             else:
                 for service in onenode:
-                    services['host-0'].append(service)
+                    services['host-0'][service] = "one-node"
+                    services['clusterservices'].append(service)
         else :
             clustersize = 2
-            #parse multinode services into one-node type and multi-node type
+            services['clusterservices'].append(multinodes)
             [oservice, mservice] = self.parse_multinodes(multinodes, publicpath, imagename, imageowner, imagetype)
             olen = len(oservice)
             mlen = len(mservice)
             if olen > clustersize:
                 clustersize = olen
             for i in range(0, clustersize):
-                services['host-'+str(i)] = []
-            for i in range(0, olen):
-                services['host-'+str(i)].append(oservice[i])
-            if not mservice is None:
-                for i in range(0, clustersize):
-                    for j in range(0, mlen):
-                        services['host-'+str(i)].append(mservice[j])
+                services['host-'+str(i)] = {}
+                if olen > i:
+                    services['host-'+str(i)][oservice[i]] = "multi-node"
+                for j in range(0, mlen):
+                    services['host-'+str(i)][mservice[j]] = "multi-node"
 
         logger.info ('service file content : %s' % services)
         #servicefile = open(servicepath, 'w')
@@ -126,16 +149,17 @@ class ServiceMgr():
         return [clustersize, services]
 
     def gen_servicecmd(self, clustername, username, info):
-        publicpath = self.FS_PREFIX+'/local/basefs/home/init.s/'
+        publicpath = self.FS_PREFIX+'/local/basefs/home/init.s'
         clustersize = info['size']
-        servicelist = []
+        clusterservices = info['services']['clusterservices']
+        servicecmdlist = []
         for i in range(0, clustersize):
             servicecmd = []
             containername = info['containers'][i]['containername']
-            privatepath = self.FS_PREFIX+'/local/volume/'+containername+"/upper/home/init.c/"
+            privatepath = self.FS_PREFIX+'/local/volume/'+containername+"/upper/home/init.c"
             services = info['services']['host-'+str(i)]
-            for service in services:
-                serviceconf = self.get_serviceconf(service, publicpath, privatepath)
+            for service in services.keys():
+                serviceconf = self.get_serviceconf(clusterservices, service, publicpath, privatepath, services[service] is 'multi-node')
                 if 'one' in serviceconf.keys():
                     script = serviceconf['one']['path'] + ' ' + serviceconf['one']['params']
                     servicecmd.append(script)
@@ -145,17 +169,15 @@ class ServiceMgr():
                         servicecmd.append(script)
                     script = serviceconf['slave']['path'] + ' ' + self.replace_params(serviceconf['slave']['params'], info['services'])
                     servicecmd.append(script)
-            servicelist.append(servicecmd)
-        logger.info ("services cmd is : %s" % servicelist)
-        return servicelist
+            servicecmdlist.append(servicecmd)
+        #.info ("services cmd is : %s" % servicelist)
+        return servicecmdlist
 
 
 
 if __name__ == '__main__':
     smgr = ServiceMgr()
-    [flag, services] = smgr.create_service('root', 'lk', 'base', 'docklet', 'base', ['ssh', 'jupyter'], None)
-    print ('services returned is %s' % services)
-    [flag, services] = smgr.create_service('root', 'lk', 'base', 'docklet', 'base', None, 'apache2+mysql')
-    print ('services returned is %s' % services)
-    [flag, services] = smgr.create_service('root', 'lk', 'base', 'docklet', 'base', None, 'spark')
-    print ('services returned is %s' % services)
+    infopath = "/opt/docklet/global/users/root/clusters/test"
+    info = smgr.load_file(infopath)
+    print ("info is : %s" % info)
+    cmd = smgr.gen_servicecmd('test', 'root', info)

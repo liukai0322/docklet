@@ -167,13 +167,21 @@ IP=%s
             # not sure whether should execute this
             Ret = subprocess.run(["lxc-attach -n %s -- service ssh start" % lxc_name],
                     stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, check=False)
-            logger.debug(Ret.stdout.decode('utf-8'))
+            logger.debug(Ret)
+
             for service in services:
-                logger.info ("start service %s for container" % service)
-                Ret = subprocess.run(["lxc-attach -n %s -- %s" % (lxc_name, service)],
-                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, check=False)
-                logger.debug(Ret.stdout.decode('utf-8'))
+                logger.info ("starting service %s for container %s" % (service, lxc_name))
+                logger.info ("service command is : lxc-attach -n %s -- %s" % (lxc_name, service))
+                if 'spark' in service and 'master' in service :
+                    Ret = subprocess.run(["lxc-attach -n %s -- su -c %s" % (lxc_name, service)],
+                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, check=False)
+                    logger.debug(Ret)
+                else :
+                    Ret = subprocess.run(["lxc-attach -n %s -- %s" % (lxc_name, service)],
+                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, check=False)
+                    logger.debug(Ret)
             return [True, "start container services success"]
+
         except subprocess.CalledProcessError as sube:
             logger.error('start services for container %s failed: %s' % (lxc_name,
                     sube.output.decode('utf-8')))
