@@ -102,7 +102,7 @@ class VclusterMgr(object):
         clusterfile.close()
         return [True, info]
 
-    def scale_out_cluster(self,clustername,username,image):
+    def scale_out_cluster(self,clustername,username,image,extensive,onenode):
         if not self.is_cluster(clustername,username):
             return [False, "cluster:%s not found" % clustername]
         workers = self.nodemgr.get_rpcs()
@@ -124,19 +124,21 @@ class VclusterMgr(object):
         clusterpath = self.fspath + "/global/users/" + username + "/clusters/" + clustername
         hostpath = self.fspath + "/global/users/" + username + "/hosts/" + str(clusterid) + ".hosts"
         cid = clusterinfo['nextcid']
+        [newservices, cmd] = self.servmgr.scale_out(username, clustername, clusterinfo, cid, extensive, onenode, image)
         onework = workers[random.randint(0, len(workers)-1)]
         lxc_name = username + "-" + str(clusterid) + "-" + str(cid)
         hostname = "host-" + str(cid)
         onework.create_container(lxc_name, username, clustername, clusterid, hostname, ip, gateway, str(vlanid), imagename, imageowner, imagetype)
         if clusterinfo['status'] == "running":
             onework.start_container(lxc_name)
-        onework.start_services(lxc_name, ["ssh"], False) # TODO: need fix
+            onework.start_services(lxc_name, cmd, False)
         logger.info("scale out success")
         hostfile = open(hostpath, 'a')
         hostfile.write(ip.split("/")[0] + "\t" + hostname + "\t" + hostname + "." + clustername + "\n")
         hostfile.close()
         clusterinfo['nextcid'] = int(clusterinfo['nextcid']) + 1
         clusterinfo['size'] = int(clusterinfo['size']) + 1
+        clusterinfo['services'] = newservices
         clusterinfo['containers'].append({'containername':lxc_name, 'hostname':hostname, 'ip':ip, 'host':self.nodemgr.rpc_to_ip(onework), 'image':image['name'], 'lastsave':datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") })
         clusterfile = open(clusterpath, 'w')
         clusterfile.write(json.dumps(clusterinfo))

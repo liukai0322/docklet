@@ -69,6 +69,23 @@ class ServiceMgr():
                     mservice.append(service)
         return [oservice, mservice]
 
+    def do_gencmd(self, info, i, publicpath, privatepath):
+        servicecmd = []
+        clusterservices = info['services']['clusterservices']
+        services = info['services']['host-'+str(i)]
+        for service in services.keys():
+            serviceconf = self.get_serviceconf(clusterservices, service, publicpath, privatepath, services[service] is 'multi-node')
+            if 'one' in serviceconf.keys():
+                script = serviceconf['one']['path'] + ' ' + serviceconf['one']['params']
+                servicecmd.append(script)
+            else :
+                if i == 0:
+                    script = serviceconf['master']['path'] + ' ' + self.replace_params(serviceconf['master']['params'], info['services'])
+                    servicecmd.append(script)
+                script = serviceconf['slave']['path'] + ' ' + self.replace_params(serviceconf['slave']['params'], info['services'])
+                servicecmd.append(script)
+        return servicecmd
+
     def replace_params(self, script, services):
         script = script.replace("$MASTER$", services['master'])
         return script
@@ -77,7 +94,7 @@ class ServiceMgr():
         #self.FS_PREFIX = env.getenv('FS_PREFIX')
         self.FS_PREFIX = "/opt/docklet"
 
-    def list_service(self, imagename, username, isshared):
+    def list_service(self, imagename, imageowner, imagetype):
         onenode_service = []
         multinode_service = []
 
@@ -89,7 +106,7 @@ class ServiceMgr():
 
         #get image service
         if not imagename is 'base' :
-            servicelistpath = self.FS_PREFIX + '/global/images/' + isshared + '/' + username + '/' + imagename + '/home/init.c/service.list'
+            servicelistpath = self.FS_PREFIX + '/global/images/' + imagetype + '/' + imageowner + '/' + imagename + '/home/init.c/service.list'
             imageservice = self.load_file(servicelistpath)
             if not imageservice is None:
                 onenode_service.extend(imageservice['one-node'].keys())
@@ -102,6 +119,39 @@ class ServiceMgr():
         result['onenode'] = onenode_service
         result['multinode'] = multinode_service
 
+        return result
+
+    def list_service2(self, username, clustername, imagename, imageowner, imagetype):
+        allservices = self.list_service(imagename, imageowner, imagetype)['onenode']
+        extensiveservice = []
+        #get current cluster service
+        clusterconfpath = self.FS_PREFIX+'/global/users/'+username+'/clusters/'+clustername
+        clusterconf = self.load_file(clusterconfpath)
+        clusterservices = clusterconf['services']['clusterservices']
+
+        publicpath = self.FS_PREFIX+'/local/basefs/home/init.s'
+        #if base image is chosen
+        if imagename is 'base':
+            privatepath = publicpath
+        #if a user image is chosen
+        else :
+            privatepath = self.FS_PREFIX+'/global/images/'+imagetype+'/'+imageowner+'/'+imagename+'/home/init.c'
+
+        for service in allservices:
+            if service in clusterservices :
+                serviceconf = self.get_serviceconf('', service, publicpath, privatepath, False)
+                if serviceconf['scalable'] == 'true':
+                    extensiveservice.append(service)
+                    allservices.remove(service)
+            else :
+                continue
+
+        allservices.sort()
+        extensiveservice.sort()
+
+        result = {}
+        result['onenode'] = allservices
+        result['extensive'] = extensiveservice
         return result
 
     def create_service(self, username, clustername, image, onenode, multinodes):
@@ -148,31 +198,60 @@ class ServiceMgr():
         #servicefile.close()
         return [clustersize, services]
 
+    def scale_out(self, username, clustername, info, cid, extensive, onenode, image):
+        services = info['services']
+        newhost = {}
+        if extensive is None and onenode is None:
+            return [services, []]
+        #deal with onenode services
+        if not onenode is None :
+            if isinstance(onenode, str):
+                if not onenode in services['clusterservices'] :
+                    services['clusterservices'].append(onenode)
+                newhost[onenode] = 'one-node'
+            else :
+                for one in onenode:
+                    if not one in services['clusterservices'] :
+                        services['clusterservices'].append(one)
+                    newhost[one] = 'one-node'
+        #deal with extensive services
+        if not extensive is None :
+            if isinstance(extensive, str):
+                for i in range(0, cid):
+                    services["host-"+str(i)][extensive] = 'multi-node'
+                newhost[extensive] = 'multi-node'
+            else :
+                for ex in extensive:
+                    for i in range(0, cid):
+                        services["host-"+str(i)][ex] = 'multi-node'
+                    newhost[ex] = 'multi-node'
+        services['host-'+str(cid)] = newhost
+
+        imagename = image['name']
+        imageowner = image['owner']
+        imagetype = image['type']
+        publicpath = self.FS_PREFIX+'/local/basefs/home/init.s'
+        privatepath = ''
+        #if base image is chosen
+        if imagename is 'base':
+            privatepath = publicpath
+        #if a user image is chosen
+        else :
+            privatepath = self.FS_PREFIX+'/global/images/'+imagetype+'/'+imageowner+'/'+imagename+'/home/init.c'
+        cmd = self.do_gencmd(info, cid, publicpath, privatepath)
+        logger.info ('services is %s, command is %s' % (services, cmd))
+        return [services, cmd]
+
     def gen_servicecmd(self, clustername, username, info):
         publicpath = self.FS_PREFIX+'/local/basefs/home/init.s'
         clustersize = info['size']
-        clusterservices = info['services']['clusterservices']
         servicecmdlist = []
         for i in range(0, clustersize):
-            servicecmd = []
             containername = info['containers'][i]['containername']
             privatepath = self.FS_PREFIX+'/local/volume/'+containername+"/upper/home/init.c"
-            services = info['services']['host-'+str(i)]
-            for service in services.keys():
-                serviceconf = self.get_serviceconf(clusterservices, service, publicpath, privatepath, services[service] is 'multi-node')
-                if 'one' in serviceconf.keys():
-                    script = serviceconf['one']['path'] + ' ' + serviceconf['one']['params']
-                    servicecmd.append(script)
-                else :
-                    if i == 0:
-                        script = serviceconf['master']['path'] + ' ' + self.replace_params(serviceconf['master']['params'], info['services'])
-                        servicecmd.append(script)
-                    script = serviceconf['slave']['path'] + ' ' + self.replace_params(serviceconf['slave']['params'], info['services'])
-                    servicecmd.append(script)
+            servicecmd = self.do_gencmd(info, i, publicpath, privatepath)
             servicecmdlist.append(servicecmd)
-        #.info ("services cmd is : %s" % servicelist)
         return servicecmdlist
-
 
 
 if __name__ == '__main__':

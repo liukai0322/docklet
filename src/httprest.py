@@ -182,10 +182,12 @@ class DockletHttpHandler(http.server.BaseHTTPRequestHandler):
                 image['name'] = form.getvalue("imagename")
                 image['type'] = form.getvalue("imagetype")
                 image['owner'] = form.getvalue("imageowner")
+                extensive = form.getvalue("extensive")
+                onenode = form.getvalue("onenode")
                 logger.debug("imagename:" + image['name'])
                 logger.debug("imagetype:" + image['type'])
                 logger.debug("imageowner:" + image['owner'])
-                [status, result] = G_vclustermgr.scale_out_cluster(clustername, user, image)
+                [status, result] = G_vclustermgr.scale_out_cluster(clustername, user, image, extensive, onenode)
                 if status:
                     self.response(200, {'success':'true', 'action':'scale out', 'message':result})
                 else:
@@ -467,6 +469,13 @@ class DockletHttpHandler(http.server.BaseHTTPRequestHandler):
                 username = form.getvalue('username', 'base')
                 isshared = form.getvalue('isshared', 'base')
                 result = G_servicemgr.list_service(imagename, username, isshared)
+                self.response(200, result)
+            elif cmds[1] == 'list2' :
+                imagename = form.getvalue('imagename', 'base')
+                username = form.getvalue('username', 'base')
+                isshared = form.getvalue('isshared', 'base')
+                clustername = form.getvalue('clustername', '')
+                result = G_servicemgr.list_service2(user, clustername, imagename, username, isshared)
                 self.response(200, result)
         else:
             logger.warning ("request not supported ")

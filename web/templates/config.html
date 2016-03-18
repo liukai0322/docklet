@@ -1,10 +1,10 @@
 {% extends "base.html"%}
 
 <!--
-	Config Page : 
-		1. images 
+	Config Page :
+		1. images
 		2. workspace templates
-		
+
 -->
 
 {% block title %}Docklet | Config{% endblock %}
@@ -51,7 +51,7 @@
                          				</div>
 							</div>
 						<div class="ibox-content">
-			     <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#Scaleout_{{ clustername }}"><i class="fa fa-plus"></i>Add Node</button>
+			     <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#Scaleout_{{ clustername }}" onclick="changeclustername('{{ clustername }}')"><i class="fa fa-plus"></i>Add Node</button>
 			     <div class="modal inmodal" id="Scaleout_{{ clustername }}" tabindex="-1" role="dialog" aria-hidden="true">
                                    <div class="modal-dialog">
                                    <div class="modal-content animated fadeIn">
@@ -100,6 +100,14 @@
 									{% endfor %}
 								</tbody>
 							</table>
+
+
+              <div class="col-sm-10" id="extensive-service">
+              </div>
+              <div class="col-sm-10" id="other-service">
+              </div>
+
+
 						<div class="modal-footer">
                                                		<button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
                                                		<button type="submit" class="btn btn-success">Add</button>
@@ -128,13 +136,13 @@
                                  <td>{{ loop.index }}</td>
                                  <td>{{ container['containername'] }}</td>
                                  <td>{{ container['ip'] }}</td>
-                               
+
                                  {% if  clusterinfo['status']  == 'stopped' %}
 								 <td><div class="text-warning"><i class="fa fa-stop"></i> Stopped</div></td>
                                  {% else %}
 								 <td><div class="text-success"><i class="fa fa-play"></i> Running</div></td>
                                  {% endif %}
-                                 
+
 				 <td>{{ container['image'] }}</td>
 				 <td><button type="button" class="btn btn-success btn-xs" data-toggle="modal" data-target="#DelModal_{{ container['containername'] }}">Save</button></td>
                 {% if container['containername'][-2:] == '-0' %}
@@ -193,7 +201,7 @@
                          							        <i class="fa fa-times"></i>
                          							    </a>
                          							</div>
-									</div>
+									</div>scaleout-service
 									<div class="ibox-content">
 			 						<p>
 			  							service can add in here
@@ -260,7 +268,7 @@
 					</td>
 				{% else %}
 					<td><div class="label label-outline-default">shared</div></td>
-					<td>	
+					<td>
 						<a href="/image/unshare/{{ image['name'] }}/"><button type="button" class="btn btn-xs btn-warning">unshare</button></a>
 						<a href="/image/delete/{{ image['name'] }}/"><button type="button" class="btn btn-xs btn-danger">delete</button></a>
 					</td>
@@ -273,7 +281,7 @@
 				<td>{{image['name']}}</td>
 				<td><div class="label label-outline-success">{{"public"}}</div></td>
 				<td>{{p_user}}</td>
-				<td>{{image['time']}}</td>	
+				<td>{{image['time']}}</td>
 				<td><a href="/image/description/{{image['name']}}_{{p_user}}_public/" target="_blank">{{image['description']}}</a></td>
 				<td></td>
 				{% if p_user == mysession['username'] %}
@@ -290,7 +298,7 @@
 	</div>
 	</div>
 </div>
-	 
+
 {% endblock %}
 
 {% block script_src %}
@@ -300,14 +308,49 @@
 <script src="/static/js/plugins/dataTables/dataTables.responsive.js"></script>
 <script src="/static/js/plugins/dataTables/dataTables.tableTools.min.js"></script>
 <script>
+
+  var cluster = ''
+
+  function changeclustername(name) {
+    cluster = name
+    var id = "Scaleout_" + cluster
+    $("#"+id).find('input[name="image"]:checked').click()
+  }
          $(document).ready(function() {
+
+
+					 $(":radio").click(function(){
+						 value = $('input[name="image"]:checked').val().split('_')
+						 $.post("/service/list2/", {imagename:value[0], username:value[1], isshared:value[2], clustername:cluster}, function(data){
+               var parsedData = jQuery.parseJSON(data)
+               var onenode = parsedData.onenode
+               var extensive = parsedData.extensive
+               var html = '<label class="control-label" style="display:inline-block;width:150px;">Extensive</label>'
+               for (var i = 0; i < extensive.length; i ++){
+                 html += '<div class="checkbox-success checkbox-inline">'
+                 html += '<input type="checkbox" name="extensive" value="'+extensive[i]+'" >'
+                 html += '<label> '+extensive[i]+' </label>'
+                 html += '</div>'
+               }
+               $("#extensive-service").html(html)
+               html = '<label class="control-label" style="display:inline-block;width:150px;">Others</label>'
+               for (var i = 0; i < onenode.length; i ++){
+                 html += '<div class="checkbox-success checkbox-inline">'
+                 html += '<input type="checkbox" name="onenode" value="'+onenode[i]+'" >'
+                 html += '<label> '+onenode[i]+' </label>'
+                 html += '</div>'
+               }
+               $("#other-service").html(html)
+             })
+					 })
+
              $('.dataTables-example').DataTable({
                  "dom": 'lTfigt',
                  "tableTools": {
                      "sSwfPath": "js/plugins/dataTables/swf/copy_csv_xls_pdf.swf"
                  }
              });
- 
+
              /* Init DataTables */
              var oTable = $('#editable').DataTable();
 
@@ -323,12 +366,12 @@
                          "column": oTable.fnGetPosition( this )[2]
                      };
                  },
- 
+
                  "width": "90%",
                  "height": "100%"
              } );
- 
- 
+
+
          });
              var oTable2 = $('#editable2').DataTable();
 
@@ -344,13 +387,11 @@
                          "column": oTable.fnGetPosition( this )[2]
                      };
                  },
- 
+
                  "width": "90%",
                  "height": "100%"
              } );
- 
- 
- 
+
          function fnClickAddRow() {
              $('#editable').dataTable().fnAddData( [
                  "Custom row",
@@ -364,7 +405,7 @@
                  "New row",
                  "New row",
                  "New row" ] );
- 
+
          }
  </script>
 

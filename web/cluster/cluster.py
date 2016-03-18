@@ -68,7 +68,9 @@ class scaleoutView(normalView):
             "clustername": self.clustername,
             'imagename': self.image[:index2],
             'imageowner': self.image[index2+1:index1],
-            'imagetype': self.image[index1+1:]
+            'imagetype': self.image[index1+1:],
+            'extensive': self.extensive,
+            'onenode': self.onenode
         }
         result = dockletRequest.post("/cluster/scaleout/", data)
         if(result):

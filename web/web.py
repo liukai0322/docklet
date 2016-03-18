@@ -119,6 +119,8 @@ def createCluster():
 def scaleout(clustername):
     scaleoutView.image = request.form["image"]
     scaleoutView.clustername = clustername
+    scaleoutView.extensive = request.form.getlist("extensive")
+    scaleoutView.onenode = request.form.getlist("onenode")
     return scaleoutView.as_view()
 
 @app.route("/workspace/scalein/<clustername>/<containername>/", methods=['GET'])
@@ -352,6 +354,19 @@ def service_list():
     if result:
         logger.info ('service result : %s' % result)
         return json.dumps(result)
+
+@app.route('/service/list2/', methods=['POST'])
+def service_list2():
+    imagename = request.form["imagename"]
+    username = request.form["username"]
+    isshared = request.form["isshared"]
+    clustername = request.form["clustername"]
+    data = {"imagename":imagename, "username":username, "isshared":isshared, "clustername":clustername}
+    result = dockletRequest.post("/service/list2/", data)
+    if result:
+        logger.info ('service result : %s' % result)
+        return json.dumps(result)
+    return ''
 
 @app.errorhandler(401)
 def not_authorized(error):
