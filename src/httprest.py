@@ -477,6 +477,30 @@ class DockletHttpHandler(http.server.BaseHTTPRequestHandler):
                 clustername = form.getvalue('clustername', '')
                 result = G_servicemgr.list_service2(user, clustername, imagename, username, isshared)
                 self.response(200, result)
+            elif cmds[1] == 'list3' :
+                clustername = form.getvalue('clustername', '')
+                containername = form.getvalue('containername', '')
+                result = G_servicemgr.list_service3(user, clustername, containername)
+                self.response(200, result)
+            elif cmds[1] == 'list4' :
+                imagename = form.getvalue('imagename', 'base')
+                imageowner = form.getvalue('imageowner', 'base')
+                imagetype = form.getvalue('imagetype', 'base')
+                result = G_servicemgr.list_service4(imagename, imageowner, imagetype)
+                self.response(200, result)
+            elif cmds[1] == 'config' :
+                clustername = form.getvalue('clustername', '')
+                containername = form.getvalue('containername', '')
+                services = form.getvalue('services', '')
+                result = G_servicemgr.config_service(user, clustername, containername, services)
+                self.response(200, result)
+            elif cmds[1] == 'combine' :
+                imagename = form.getvalue('imagename', 'base')
+                imageowner = form.getvalue('imageowner', 'base')
+                imagetype = form.getvalue('imagetype', 'base')
+                services = form.getvalue('services', '')
+                result = G_servicemgr.combine_service(imagename, imageowner, imagetype, services)
+                self.response(200, result)
         else:
             logger.warning ("request not supported ")
             self.response(400, {'success':'false', 'message':'not supported request'})

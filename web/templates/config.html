@@ -193,6 +193,9 @@
 								<div class="ibox float-e-gargins">
 									<div class="ibox-title">
 										<p>SERVICE</p>
+
+
+
                          							<div class="ibox-tools">
                          							    <a class="collapse-link">
                          							        <i class="fa fa-chevron-up"></i>
@@ -201,11 +204,97 @@
                          							        <i class="fa fa-times"></i>
                          							    </a>
                          							</div>
-									</div>scaleout-service
-									<div class="ibox-content">
-			 						<p>
-			  							service can add in here
-			 						</p>
+									</div>
+
+                  <div class="ibox-content">
+                    </h5>
+                      Select A Node :
+                      {% for container in clusterinfo['containers'] %}
+                      <div class="checkbox-success checkbox-inline">
+                        <input type="radio" name="containername4service" value="{{ clustername }}_{{ container['containername'] }}" >
+                        <label> {{ container['containername'] }} </label>
+                      </div>
+
+                      <button type="button" style="float:right;" class="btn btn-primary btn-sm" onclick="clicknewservice()">Add New Service</button>
+                    </h5>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div name="configservice" style="display:none">
+                      <div class="row">
+                            <div class="form-group"><label class="col-sm-2 control-label">Service Configuration</label>
+                              <div class="col-sm-10">
+                                <label class="control-label" style="display:inline-block;width:150px;">Default Services</label>
+                                  <div class="checkbox-success checkbox-inline">
+                                    <input type="checkbox" name="default" value="jupyter" disabled="True" checked="checked">
+                                    <label> Jupyter </label>
+                                  </div>
+                                  <div class="checkbox-success checkbox-inline">
+                                    <input type="checkbox" name="default" value="ssh" disabled="True" checked="checked">
+                                    <label> ssh </label>
+                                  </div>
+                              </div>
+                            </div>
+          				          <div class="form-group"><label class="col-sm-2 control-label"></label>
+                              <div class="col-sm-10" id="servicehad">
+                              </div>
+                            </div>
+                            <div class="form-group"><label class="col-sm-2 control-label"></label>
+                              <div class="col-sm-10" id="serviceadd">
+                              </div>
+                            </div>
+                      </div>
+                      <div align="right">
+                        <button type="button" class="btn btn-primary btn-sm" onclick="cancelconfig()">Cancel</button>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="confirmconfig()">Confirm Config</button>
+                      </div>
+                    </div>
+
+                    <div name="newservice" style="display:none">
+                      <div class="row">
+          				    <div class="form-group"><label class="col-sm-2 control-label">Service Name</label>
+          					    <div class="col-sm-10"><input type="text" class="form-control" name="servicename" id="servicename"></div>
+          				    </div>
+          				    </div>
+                      <div class="row"><input type="radio" name="newservicetype" value="onenode_{{ clustername }}_{{ container['containername'] }}" >
+          				    <div class="form-group">
+                        <label class="col-sm-2 control-label">One Node mode</label>
+          					    <div class="col-sm-10">shell path<input type="text" class="form-control" name="onenodepath" id="onenodepath" disabled="False"></div>
+          				    </div>
+          				    </div>
+                      <div class="row">
+                      <div class="form-group"><label class="col-sm-2 control-label"></label>
+                        <div class="col-sm-10">shell param<input type="text" class="form-control" name="onenodeparam" id="onenodeparam" disabled="True"></div>
+                      </div>
+                      </div>
+                      <div class="row"><input type="radio" name="newservicetype" value="multinode_{{ clustername }}_{{ container['containername'] }}" >
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label">Multi Nodes mode</label>
+                        <div class="col-sm-10">master shell path<input type="text" class="form-control" name="masterpath" id="masterpath" disabled="True"></div>
+                      </div>
+                    </div>
+                      <div class="row">
+                      <div class="form-group"><label class="col-sm-2 control-label"></label>
+                        <div class="col-sm-10">master shell param<input type="text" class="form-control" name="masterparam" id="masterparam" disabled="True"></div>
+                      </div>
+                      </div>
+
+                      <div class="row">
+                      <div class="form-group"><label class="col-sm-2 control-label"></label>
+                        <div class="col-sm-10">slave shell path<input type="text" class="form-control" name="slavepath" id="slavepath" disabled="True"></div>
+                      </div>
+                      </div>
+                      <div class="row">
+                      <div class="form-group"><label class="col-sm-2 control-label"></label>
+                        <div class="col-sm-10">slave shell param<input type="text" class="form-control" name="slaveparam" id="slaveparam" disabled="True"></div>
+                      </div>
+                      </div>
+                      <div align="right">
+                        <button type="button" class="btn btn-primary btn-sm" onclick="canceladd()">Cancel</button>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="addservice()">Confirm Add</button>
+                      </div>
+                    </div>
+                    {% endfor %}
 									</div>
 								</div>
 							</div>
@@ -295,6 +384,58 @@
 			</tbody>
 		  </table>
 		</div>
+
+
+    <div class="ibox-content">
+      <div>
+        <button type="button" class="btn btn-primary btn-sm" onclick="">Create Micro Service Combination</button>
+      </div>
+      </h5>
+        Select A Image :
+          <div class="checkbox-success checkbox-inline">
+            <input type="radio" name="imagename4service" value="base_base_base" >
+            <label> base </label>
+          </div>
+        {% for image in images['private'] %}
+          <div class="checkbox-success checkbox-inline">
+            <input type="radio" name="imagename4service" value="{{image['name']}}_{{mysession['username']}}_private" >
+            <label> {{ image['name'] }} (private)</label>
+          </div>
+        {% endfor %}
+
+        {% for p_user,p_images in images['public'].items() %}
+          {% if p_user == mysession['username'] %}
+            {% for image in p_images %}
+              <div class="checkbox-success checkbox-inline">
+                <input type="radio" name="imagename4service" value="{{image['name']}}_{{mysession['username']}}_public" >
+                <label> {{ image['name'] }} (public)</label>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+      </h5>
+
+      <div class="hr-line-dashed"></div>
+
+      <div name="combineservice" style="display:none">
+        <div class="row">
+              <div class="form-group"><label class="col-sm-2 control-label"></label>
+                <div class="col-sm-10" id="existingcombine">
+                </div>
+              </div>
+              <div class="form-group"><label class="col-sm-2 control-label"></label>
+                <div class="col-sm-10" id="servicecombine">
+                </div>
+              </div>
+        </div>
+        <div align="right">
+          <button type="button" class="btn btn-primary btn-sm" onclick="cancelcombine()">Cancel</button>
+          <button type="button" class="btn btn-primary btn-sm" onclick="confirmcombine()">Confirm Combine</button>
+        </div>
+      </div>
+    </div>
+
+
 	</div>
 	</div>
 </div>
@@ -316,11 +457,64 @@
     var id = "Scaleout_" + cluster
     $("#"+id).find('input[name="image"]:checked').click()
   }
+
+  function clicknewservice() {
+    $("[name='newservice']").attr('style', 'display:block')
+  }
+
+  function cancelconfig() {
+    $("[name='configservice']").attr('style', 'display:none')
+  }
+
+  function canceladd() {
+    $("[name='newservice']").attr('style', 'display:none')
+  }
+
+  function confirmconfig() {
+    var value = $("input[name='containername4service']:checked").attr('value').split('_')
+    var services = ''
+    $("input[name='serviceadd']:checked").each(function(i){
+      if (0 == i){
+        services = $(this).val()
+      }
+      else {
+        services += ';' + $(this).val()
+      }
+    })
+    $.post("/service/config/", {clustername:value[0], containername:value[1], service:services}, function(data){
+      $("input[name='containername4service']:checked").click()
+    })
+  }
+
+  function confirmcombine() {
+    var value = $("input[name='imagename4service']:checked").attr('value').split('_')
+    var services = ''
+    $("input[name='servicecombine']:checked").each(function(i){
+      if (0 == i){
+        services = $(this).val()
+      }
+      else {
+        services += '+' + $(this).val()
+      }
+    })
+    $.post("/service/combine/", {imagename:value[0], imageowner:value[1], imagetype:value[2], service:services}, function(data){
+      $("input[name='imagename4service']:checked").click()
+    })
+  }
+
+  function addservice() {
+    var servicename = $('#servicename').val()
+    var onenodepath = $('#onenodepath').val()
+    var onenodeparam = $('#onenodeparam').val()
+    var masterpath = $('#masterpath').val()
+    var masterparam = $('#masterparam').val()
+    var slavepath = $('#slavepath').val()
+    var slaveparam = $('#slaveparam').val()
+  }
+
          $(document).ready(function() {
-
-
-					 $(":radio").click(function(){
-						 value = $('input[name="image"]:checked').val().split('_')
+					 $(":radio[name='image']").click(function(){
+						 var value = $('input[name="image"]:checked').val().split('_')
 						 $.post("/service/list2/", {imagename:value[0], username:value[1], isshared:value[2], clustername:cluster}, function(data){
                var parsedData = jQuery.parseJSON(data)
                var onenode = parsedData.onenode
@@ -343,6 +537,80 @@
                $("#other-service").html(html)
              })
 					 })
+
+           $(":radio[name='containername4service']").click(function(){
+             $("[name='configservice']").attr('style', 'display:block')
+             var value = $("input[name='containername4service']:checked").attr('value').split('_')
+             $.post("/service/list3/", {clustername:value[0], containername:value[1]}, function(data){
+               var parsedData = jQuery.parseJSON(data)
+               var servicehad = parsedData.servicehad
+               var serviceadd = parsedData.serviceadd
+               var html = '<label class="control-label" style="display:inline-block;width:150px;">Service already have</label>'
+               for (var i = 0; i < servicehad.length; i ++){
+                 html += '<div class="checkbox-success checkbox-inline">'
+                 html += '<input type="checkbox" name="servicehad" value="'+servicehad[i]+'" disabled="True" checked="checked">'
+                 html += '<label> '+servicehad[i]+' </label>'
+                 html += '</div>'
+               }
+               $("#servicehad").html(html)
+               var html = '<label class="control-label" style="display:inline-block;width:150px;">Service can be add</label>'
+               for (var i = 0; i < serviceadd.length; i ++){
+                 html += '<div class="checkbox-success checkbox-inline">'
+                 html += '<input type="checkbox" name="serviceadd" value="'+serviceadd[i]+'" >'
+                 html += '<label> '+serviceadd[i]+' </label>'
+                 html += '</div>'
+               }
+               $("#serviceadd").html(html)
+             })
+           })
+
+           $(":radio[name='imagename4service']").click(function(){
+             $("[name='combineservice']").attr('style', 'display:block')
+             var value = $("input[name='imagename4service']:checked").attr('value').split('_')
+             $.post("/service/list4/", {imagename:value[0], imageowner:value[1], imagetype:value[2]}, function(data){
+               var parsedData = jQuery.parseJSON(data)
+               var onenode = parsedData.onenode
+               var multinode = parsedData.multinode
+               var html = '<label class="control-label" style="display:inline-block;width:300px;">Existing Micro Service Cluster</label>'
+               for (var i = 0; i < multinode.length; i ++){
+                 html += '<div class="checkbox-success checkbox-inline">'
+                 html += '<input type="checkbox" name="existingcombine" value="'+multinode[i]+'" disabled="True" checked="checked">'
+                 html += '<label> '+multinode[i]+' </label>'
+                 html += '</div>'
+               }
+               //alert(html)
+               $("#existingcombine").html(html)
+               var html = '<label class="control-label" style="display:inline-block;width:300px;">Service Can be Combine</label>'
+               for (var i = 0; i < onenode.length; i ++){
+                 html += '<div class="checkbox-success checkbox-inline">'
+                 html += '<input type="checkbox" name="servicecombine" value="'+onenode[i]+'" >'
+                 html += '<label> '+onenode[i]+' </label>'
+                 html += '</div>'
+               }
+               //alert(html)
+               $("#servicecombine").html(html)
+             })
+           })
+
+           $(":radio[name='newservicetype']").click(function(){
+             var value = $("input[name='newservicetype']:checked").attr('value').split('_')
+             if (value[0] == 'onenode') {
+               $("#onenodepath").removeAttr('disabled')
+               $("#onenodeparam").removeAttr('disabled')
+               $("#masterpath").attr('disabled', 'True')
+               $("#masterparam").attr('disabled', 'True')
+               $("#slavepath").attr('disabled', 'True')
+               $("#slaveparam").attr('disabled', 'True')
+             }
+             else {
+               $("#onenodepath").attr('disabled', 'True')
+               $("#onenodeparam").attr('disabled', 'True')
+               $("#masterpath").removeAttr('disabled')
+               $("#masterparam").removeAttr('disabled')
+               $("#slavepath").removeAttr('disabled')
+               $("#slaveparam").removeAttr('disabled')
+             }
+           })
 
              $('.dataTables-example').DataTable({
                  "dom": 'lTfigt',

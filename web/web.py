@@ -352,7 +352,7 @@ def service_list():
     data = {"imagename":imagename, "username":username, "isshared":isshared}
     result = dockletRequest.post("/service/list/", data)
     if result:
-        logger.info ('service result : %s' % result)
+        logger.info ('service list result : %s' % result)
         return json.dumps(result)
 
 @app.route('/service/list2/', methods=['POST'])
@@ -364,9 +364,52 @@ def service_list2():
     data = {"imagename":imagename, "username":username, "isshared":isshared, "clustername":clustername}
     result = dockletRequest.post("/service/list2/", data)
     if result:
-        logger.info ('service result : %s' % result)
+        logger.info ('service list2 result : %s' % result)
         return json.dumps(result)
-    return ''
+
+@app.route('/service/list3/', methods=['POST'])
+def service_list3():
+    clustername = request.form['clustername']
+    containername = request.form['containername']
+    data = {"clustername":clustername, "containername":containername}
+    result = dockletRequest.post("/service/list3/", data)
+    if result:
+        logger.info ('service list3 result : %s' % result)
+        return json.dumps(result)
+
+@app.route('/service/list4/', methods=['POST'])
+def service_list4():
+    imagename = request.form["imagename"]
+    imageowner = request.form["imageowner"]
+    imagetype = request.form["imagetype"]
+    data = {"imagename":imagename, "imageowner":imageowner, "imagetype":imagetype}
+    result = dockletRequest.post("/service/list4/", data)
+    if result:
+        logger.info ('service list4 result : %s' % result)
+        return json.dumps(result)
+
+@app.route('/service/config/', methods=['POST'])
+def service_config():
+    clustername = request.form['clustername']
+    containername = request.form['containername']
+    services = request.form['service']
+    data = {"clustername":clustername, "containername":containername, "services":services}
+    result = dockletRequest.post("/service/config/", data)
+    if result:
+        logger.info ('service list4 result : %s' % result)
+        return json.dumps(result)
+
+@app.route('/service/combine/', methods=['POST'])
+def service_combine():
+    imagename = request.form["imagename"]
+    imageowner = request.form["imageowner"]
+    imagetype = request.form["imagetype"]
+    services = request.form["service"]
+    data = {"imagename":imagename, "imageowner":imageowner, "imagetype":imagetype, "services":services}
+    result = dockletRequest.post("/service/combine/", data)
+    if result:
+        logger.info ('service list4 result : %s' % result)
+        return json.dumps(result)
 
 @app.errorhandler(401)
 def not_authorized(error):
